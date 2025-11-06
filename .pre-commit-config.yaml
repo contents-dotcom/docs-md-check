@@ -1,0 +1,45 @@
+﻿# .pre-commit-config.yaml  ← リポジトリのルートに配置
+repos:
+  - repo: local
+    hooks:
+      # ①② 最小チェック（フェンス未閉じ / 自作トークン混入）
+      - id: md-minimal-check
+        name: md-minimal-check
+        language: python
+        pass_filenames: false   # リポ全体を自前で走査
+        entry: python -c
+        args:
+          - |
+            import sys, re
+            from pathlib import Path
+            failed = False
+            for p in Path(".").rglob("*.md"):
+                # 生成物は除外（← ここが今回の修正①）
+                if p.name.endswith(".masked.md") or p.name.endswith(".view.md"):
+                    continue
+                if not p.is_file():
+                    continue
+                t = p.read_text(encoding="utf-8", errors="ignore")
+                # ① フェンス未閉じ（``` の開閉数）
+                open_cnt  = len(re.findall(r"(?m)^```", t))
+                close_cnt = len(re.findall(r"(?m)^```[ \t]*$", t))
+                if open_cnt != close_cnt:
+                    print(f"[MD ] {p}: fence mismatch (open={open_cnt}, close={close_cnt})")
+                    failed = True
+                # ② 自作トークン混入禁止（{{CODE_001}} / {{TABLE_001}} 等）
+                if re.search(r"\{\{(?:CODE|TABLE)_\d{3}\}\}", t):
+                    print(f"[MD ] {p}: found token-like string {{CODE_xxx}}/{{TABLE_xxx}} (do not handwrite)")
+                    failed = True
+            if failed:
+                print("\n[NG] Fix the above issues and commit again.")
+                sys.exit(1)
+            print("[OK] minimal md checks passed.")
+
+      # ③ 復元=原文一致（壊さないことの保証）
+      - id: md-strict-restore
+        name: md-strict-restore
+        language: system
+        pass_filenames: false
+        entry: python
+        # スクリプトの実在パスへ修正（← ここが今回の修正②）
+        args: ["tokenize_markdown.py", ".", "--strict-restore"]
