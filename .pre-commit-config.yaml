@@ -1,4 +1,4 @@
-﻿# .pre-commit-config.yaml  ← リポジトリのルートに1枚配置
+﻿# .pre-commit-config.yaml  ← リポジトリのルートに配置
 repos:
   - repo: local
     hooks:
@@ -7,8 +7,7 @@ repos:
         name: md-minimal-check
         language: python
         entry: python tools/md_minimal_check.py
-        pass_filenames: false     # リポ全体を自前で走査
-        stages: [commit]
+        pass_filenames: false   # リポ全体を自前で走査
 
       # ③ 復元=原文一致（壊さないことの保証）
       - id: md-strict-restore
@@ -17,4 +16,3 @@ repos:
         entry: python
         args: ["tools/run_strict_restore.py"]
         pass_filenames: false
-        stages: [commit]
