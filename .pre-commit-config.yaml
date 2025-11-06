@@ -9,10 +9,10 @@ repos:
         entry: python tools/md_minimal_check.py
         pass_filenames: false   # リポ全体を自前で走査
 
-      # ③ 復元=原文一致（壊さないことの保証）
+      # ③ 復元=原文一致（書き出しなし・検査のみ）
       - id: md-strict-restore
         name: md-strict-restore
         language: system
         entry: python
-        args: ["tools/run_strict_restore.py"]
+        args: ["tools/strict_restore_check.py", ".", "--verbose"]
         pass_filenames: false
