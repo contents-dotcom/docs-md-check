@@ -1,0 +1,22 @@
+﻿# 生成物（tokenize_markdown.py）
+*.masked.md
+*.view.md
+*.store.json
+
+# Python 一時ファイル
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# 仮想環境
+.venv/
+
+# ビルド/成果物
+build/
+dist/
+
+# エディタ/OS
+.vscode/
+.DS_Store
+Thumbs.db
