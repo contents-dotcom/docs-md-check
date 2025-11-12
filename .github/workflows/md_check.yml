@@ -1,0 +1,35 @@
+name: md-check
+on:
+  pull_request:
+  push:
+    branches: [ master, main ]
+
+jobs:
+  mdcheck:
+    runs-on: windows-latest  # Windows想定。Linuxなら ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install deps
+        run: |
+          python -m pip install --upgrade pip
+          pip install pre-commit  # 任意
+          # 追加の依存があれば requirements.txt を用意
+          # pip install -r requirements.txt
+
+      - name: Validate vocab (任意・推奨)
+        run: python tools/validate_vocab.py tools/vocab.json
+
+      - name: md_check with vocab (JSONレポ付)
+        run: python tools/md_check.py docs/ --vocab tools/vocab.json --report-json
+
+      # 任意：レポートをアーティファクト化
+      - name: Save report
+        if: always()
+        run: |
+          # 例：標準出力をログへ（必要なら md_check 側でファイル出力に対応）
+          echo "See job logs for details"

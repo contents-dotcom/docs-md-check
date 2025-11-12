@@ -1,0 +1,11 @@
+# .pre-commit-config.yaml（リポジトリ直下）
+repos:
+  - repo: local
+    hooks:
+      - id: md-check
+        name: md-check (with vocab)
+        entry: python tools/md_check.py docs/ --vocab tools/vocab.json
+        language: system         # そのままPythonで実行
+        pass_filenames: false    # md_check側でパスを固定するため
+        stages: [pre-commit]     # コミット直前に走らせる
+        always_run: true         # これでファイル判定をスキップして必ず走る
